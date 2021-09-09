@@ -202,16 +202,21 @@ We say that a process `x` is affected by a process `z` if all the messages which
 
 # FAQ
 **1. Will I lose points if my code is not modular?**
+
 Yes. We require modular code. 
 
 **2. Can I put multiple messages in the same packet?**
+
 Yes, as long as you do not utilize the fact that the payloads are sequential integers nor that the total number of messages is known in advance. For example, your code should work correctly if the payload is some arbitrary text.
 
 **3. Can I compress the messages?**
+
 Yes. This is an implementation detail that is up to you.
 
 **4. I implemented the whole project but it does not work correctly (or does not compile). Will I get some points for the implementation?**
+
 No. Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded. With an expected of 100+ submissions, it is almost impossible for us to look at each individual source code for grading. 
 
 **5. Which performance I should aim for? How many messages per second?**
+
 You should aim for maximum performance. You can assume that the number of messages will not be more than MAX_INT, i.e., each process will not broadcast more than 2147483647 messages. Also, you can assume that the broadcasting processes will be no more than 128. We know that there are always hardware limits so do not worry too much about this issue. Regarding correctness, we also expect that your code finishes in a reasonable amount of time, i.e., extremely slow submission can fail some correctness tests too.
