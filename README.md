@@ -1,10 +1,11 @@
-# Distributed Algorithms 2020/21 - EPFL
+# Distributed Algorithms 2021/22 - EPFL
 
 
 # Overview
 The goal of this practical project is to implement certain building blocks necessary for a decentralized system. To this end, some underlying abstractions will be used:
 
   - Perfect Links,
+  - Best-effort Broadcast (submission #0),
   - Uniform Reliable Broadcast,
   - FIFO Broadcast (submission #1),
   - Localized Causal Broadcast (submission #2)
@@ -26,14 +27,14 @@ In order to have a fair comparison among implementations, as well as provide sup
   - CMake for C/C++
   - Maven for Java
 
-Note that we provide you a template for both C/C++ and Java. It is mandatory to use the template in your project.
+Note that we provide you a template for both C/C++ and Java. It is mandatory to use the template in your project. You are **NOT** allowed to change any of the file names or the function signatures in this template.
 
 Allowed 3rd party libraries: **None**. You are not allowed to use any third party libraries in your project. C++17 and Java 11 come with an extensive standard library that can easily satisfy all your needs.
 
 ## Messages
 Inter-process point-to-point messages (at the low level) must be carried exclusively by UDP packets in their most basic form, not utilizing any additional features (e.g., any form of feedback about packet delivery) provided by the network stack, the operating system or external libraries. Everything must be implemented on top of these low-level point to point messages.
 
-The application messages (i.e., those broadcast by processes) are numbered sequentially at each process, starting from `1`. Thus, each process broadcasts messages `1` to `m`. By default, the payload carried by an application message is only the sequence number of that message.
+The application messages (i.e., those broadcast by processes) are numbered sequentially at each process, starting from `1`. Thus, each process broadcasts messages `1` to `m`. By default, the payload carried by an application message is only the sequence number of that message. Though the payload is known in advance, your implementation should not utilize this information. In other words, your implementation should be agnostic to the contents of the payload. For example, your implementation should work correctly if the payload is arbitrary text instead of sequential numbers. In addition, your implementation should not rely on the fact that the total number of messages (to be broadcast) is known in advance, i.e., your implementation should work correctly if the number of messages is infinite.
 
 ## Template structure
 We provide you a template for both C/C++ and Java, which you should use in your project. The template has a certain structure that is explained below:
@@ -60,7 +61,7 @@ You can run:
   - `run.sh <arguments>` to run your project
   - `cleanup.sh` to delete the build artifacts. We recommend running this command when submitting your project for evaluation.
 
-You should place your source code under the `src` directory. You are not allowed to edit any files outside the `src` directory. Furthermore, you are not allowed to edit sections of `src/CMakeLists.txt` that are marked as "DO NOT EDIT". Apart from these restrictions, you are completely free on how to structure the source code inside `src`.
+You should place your source code under the `src` directory. You are not allowed to edit any files outside the `src` directory. Furthermore, you are not allowed to edit sections of `src/CMakeLists.txt` that are marked as "DO NOT EDIT". Apart from these restrictions, you are completely free on how to structure the source code inside `src`. Yet, we encourage modular design. It is **required** to implement each abstraction in a standalone module. This will make your code cleaner and the project easier. It will also help you spot bugs.
 
 The template already includes some source code under `src`, that will help you with parsing the arguments provided to the executable (see below).
 
@@ -88,7 +89,7 @@ Finally, **your executable should not create/use directories named "deploy" and/
 The restrictions for the C/C++ template also apply here. The difference is that you are only allowed to place your source code under `src/main/java/cs451`.
 
 ## Interface
-The templates provided come with a command line interface (CLI) that you should use in your deliverables. The implementation for the CLI is given to you for convenience. You are allowed to make any modifications to it, as long as it complies to the specification.
+The templates provided come with a command line interface (CLI) that you should use in your deliverables. The implementation for the CLI is given to you for convenience. It is only for guidance, and you should not consider it complete by any means. You are encouraged to make any modifications to it, as long as it complies to the specification. You are also encouraged to test your code with different test cases and to stress test its performance in whatever way suits you.
 
 The supported arguments are:
 ```sh
@@ -148,7 +149,7 @@ These are the specific versions of toolchains where you project will be tested u
 
 All submitted files are to be placed in one zip file, in the same structure as the provided templates. Make sure that the top-level of the zip file is not a directory that contains the template (along with your source code inside `src`), but the template itself.
 
-You are **strongly encouraged** to test the compilation of your code in the virtualbox VM provided to you. Submissions that fail to compile will not be considered for grading.
+You are **strongly encouraged** to test the compilation of your code in the virtualbox VM provided to you. **Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded.**
 
 **Detailed instructions for submitting your project will be released soon.**
 
@@ -157,16 +158,21 @@ This project is meant to be completed individually. Copying from others is prohi
 
 *Note*: code similarity tools will be used to check copying.
 
-## Submissions
-This project accounts for 30% of the final grade and comprises two submissions:
-  - A runnable application implementing FIFO Broadcast, and
-  - A runnable application implementing Localized Causal Broadcast.
+## Grading
+This project accounts for 30% of the final grade and comprises three submissions:
+  - A runnable application implementing Best-effort Broadcast (10%),
+  - A runnable application implementing FIFO Broadcast (40%), and
+  - A runnable application implementing Localized Causal Broadcast (50%).
 
 Note that these submissions are *incremental*. This means that your work towards the first will help you in your work towards the second.
 
-We evaluate your submissions based on two criteria: correctness and performance. We prioritize correctness, therefore a correct - yet slow - implementation will receive (at least) a score of 4-out-of-6. The rest 2-out-of-6 is given based on the perfomance of your implementation compared to the perfomance of the implemantions submitted by your colleagues. The fastest correct implementation will receive a perfect score (6). Incorrect implementations receive a score below 4, depending on the number of tests they fail to pass.
+First, if your submission does not compile or invalid, e.g., produces empty output files, it will NOT be graded.
+If your submission passes the initial validation, we will evaluate it based on two criteria: correctness and performance. We prioritize correctness: a correct implementation (i.e., that passes all the test cases) will receive (at least) a score of 4-out-of-6. The rest 2-out-of-6 is given based on the perfomance of your implementation compared to the perfomance of the implemantions submitted by your colleagues. The fastest correct implementation will receive a perfect score (6). Incorrect implementations receive a score below 4, depending on the number of tests they fail to pass.
 
-For your submissions, we are only interested in the FIFO and Localized Causal broadcast algorithms. We define several details for each algorithms below.
+We define several details for each algorithms below.
+
+### Best-effort Broadcast application
+  - The `config` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
 
 ### FIFO Broadcast application
   - You must implement this on top of uniform reliable broadcast (URB).
@@ -193,3 +199,19 @@ In this example we specify that process `1` is affected by messages broadcast by
 We say that a process `x` is affected by a process `z` if all the messages which process `z` broadcasts and which process `x` delivers become dependencies for all future messages broadcast by process `x`. We call these dependencies *localized*. If a process is not affected by any other process, messages it broadcasts only depend on its previously broadcast messages (due to the FIFO property).
 
 *Note*:  In the default causal broadcast (this algorithm will be discussed in one of the lectures) each process affects `all` processes. In this algorithm we can selectively define which process affects some other process.
+
+# FAQ
+**1. Will I lose points if my code is not modular?**
+Yes. We require modular code. 
+
+**2. Can I put multiple messages in the same packet?**
+Yes, as long as you do not utilize the fact that the payloads are sequential integers nor that the total number of messages is known in advance. For example, your code should work correctly if the payload is some arbitrary text.
+
+**3. Can I compress the messages?**
+Yes. This is an implementation detail that is up to you.
+
+**4. I implemented the whole project but it does not work correctly (or does not compile). Will I get some points for the implementation?**
+No. Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded. With an expected of 100+ submissions, it is almost impossible for us to look at each individual source code for grading. 
+
+**5. Which performance I should aim for? How many messages per second?**
+You should aim for maximum performance. You can assume that the number of messages will not be more than MAX_INT, i.e., each process will not broadcast more than 2147483647 messages. Also, you can assume that the broadcasting processes will be no more than 128. We know that there are always hardware limits so do not worry too much about this issue. Regarding correctness, we also expect that your code finishes in a reasonable amount of time, i.e., extremely slow submission can fail some correctness tests too.
