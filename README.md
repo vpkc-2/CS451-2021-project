@@ -29,7 +29,7 @@ In order to have a fair comparison among implementations, as well as provide sup
 
 Note that we provide you a template for both C/C++ and Java. It is mandatory to use the template in your project. You are **NOT** allowed to change any of the file names or the function signatures in this template.
 
-Allowed 3rd party libraries: **None**. You are not allowed to use any third party libraries in your project. C++17 and Java 11 come with an extensive standard library that can easily satisfy all your needs.
+Allowed 3rd party libraries: **None**. You are not allowed to use any third party libraries in your project. C++17 and Java 11 come with an extensive standard library that can easily satisfy all your needs. In other words, any library that is reachable using the VM (provided in the repo) without additional configuration is allowed. Please double-check your code is able to be compiled in the VM as the submission will not be accepted.
 
 ## Messages
 Inter-process point-to-point messages (at the low level) must be carried exclusively by UDP packets in their most basic form, not utilizing any additional features (e.g., any form of feedback about packet delivery) provided by the network stack, the operating system or external libraries. Everything must be implemented on top of these low-level point to point messages.
@@ -179,6 +179,7 @@ We define several details for each algorithms below.
   - The `config` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
 
 ### Localized Causal Broadcast
+  - You must implement this on top of uniform reliable broadcast (URB).
   - The `config` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
   - For a system of `n` processes, there are `n` more lines in the `config` file. Each line `i` corresponds to process `i`, and such a line indicates the identities of other processes which can affect process `i`. See the example below.
   - The FIFO property still needs to be maintained by localized causal broadcast. That is, messages broadcast by the same process must not be delivered in a different order then they were broadcast.
@@ -220,3 +221,15 @@ No. Submissions that fail to compile will NOT be considered for grading. Similar
 **5. Which performance I should aim for? How many messages per second?**
 
 You should aim for maximum performance. You can assume that the number of messages will not be more than MAX_INT, i.e., each process will not broadcast more than 2147483647 messages. Also, you can assume that the broadcasting processes will be no more than 128. We know that there are always hardware limits so do not worry too much about this issue. Regarding correctness, we also expect that your code finishes in a reasonable amount of time, i.e., extremely slow submission can fail some correctness tests too.
+
+**6. Will there be separate performance rankings for C/C++ and Java?**
+
+Yes. C/C++ and Java will be graded separately since the performance may be drastically different. It is up to you to choose the language you are the most comfortable with. We will calibrate the performance of both languages.
+
+**7. I cannot find the validation script of Local causal broadcast validation. Where is it?**
+
+We do not provide a validation script for the last submission. You might need to implement it yourself. The validate.py script has a placeholder class in which you should place your code.
+
+**8. Is ok that the hosts terminate before they are able to deliver all the messages?**
+
+Yes, as soon as you receive a SIGTERM signal, you need to terminate the process and start writing to the logs. You may not have delivered all the messages by that time which is ok. You should only deliver the message that you can deliver. i.e., that does not violate FIFO and URB. If instead you do, while you are not allowed to, you may be violating correctness.
