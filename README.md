@@ -4,8 +4,8 @@
 # Overview
 The goal of this practical project is to implement certain building blocks necessary for a decentralized system. To this end, some underlying abstractions will be used:
 
-  - Perfect Links,
-  - Best-effort Broadcast (submission #0),
+  - Perfect Links (submission #0),
+  - Best-effort Broadcast,
   - Uniform Reliable Broadcast,
   - FIFO Broadcast (submission #1),
   - Localized Causal Broadcast (submission #2)
@@ -160,7 +160,7 @@ This project is meant to be completed individually. Copying from others is prohi
 
 ## Grading
 This project accounts for 30% of the final grade and comprises three submissions:
-  - A runnable application implementing Best-effort Broadcast (10%),
+  - A runnable application implementing perfect links (10%),
   - A runnable application implementing FIFO Broadcast (40%), and
   - A runnable application implementing Localized Causal Broadcast (50%).
 
@@ -171,8 +171,8 @@ If your submission passes the initial validation, we will evaluate it based on t
 
 We define several details for each algorithms below.
 
-### Best-effort Broadcast application
-  - The `config` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
+### Perfect Links application
+  - The `config` command-line argument for this algorithm consists of a file that contains two integers `m i` in its first line. `m` defines how many messages each process should send. `i` is the index of the process that should receive the message.
 
 ### FIFO Broadcast application
   - You must implement this on top of uniform reliable broadcast (URB).
