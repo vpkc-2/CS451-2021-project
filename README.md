@@ -100,11 +100,11 @@ Where:
   - `ID` specifies the unique identifier of the process. In a system of `n` processes, the identifiers are `1`...`n`.
   - `HOSTS` specifies the path to a file that contains the information about every process in the system, i.e., it describes the system membership. The file contains as many lines as processes in the system. A process identity consists of a numerical process identifier, the IP address or name of the process and the port number on which the process is listening for incoming messages. The entries of each process identity are separated by white space character. The following is an example of the contents of a `HOSTS` file for a system of 5 processes:
   ```
+1 localhost 11001
 2 localhost 11002
-5 127.0.0.1 11005
-3 10.0.0.1 11002
-1 192.168.0.1 11001
-4 my.domain.com 11002
+3 localhost 11003
+4 localhost 11004
+5 localhost 11005
   ```
   **Note**: The processes should listen for incoming messages in the port range `11000` to `11999` inclusive. Each process should use only 1 port.
 
@@ -143,29 +143,14 @@ You are **strongly encouraged** to test the compilation of your code in the virt
 
 **Detailed instructions for submitting your project will be released soon.**
 
-## Cooperation
-This project is meant to be completed individually. Copying from others is prohibited. You are free (and encouraged) to discuss the projects with others, but the submitted source code must be the exclusive work yours. Multiple copies of the same code will be disregarded without investigating which is the "original" and which is the "copy". Furthermore, please give appropriate credit to pieces of code you found online (e.g. in stackoverflow).
-
-*Note*: code similarity tools will be used to check copying.
-
-## Grading
-This project accounts for 30% of the final grade and comprises three submissions:
-  - A runnable application implementing perfect links (10%),
-  - A runnable application implementing FIFO Broadcast (40%), and
-  - A runnable application implementing Localized Causal Broadcast (50%).
-
-Note that these submissions are *incremental*. This means that your work towards the first will help you in your work towards the second.
-
-First, if your submission does not compile or invalid, e.g., produces empty output files, it will NOT be graded.
-If your submission passes the initial validation, we will evaluate it based on two criteria: correctness and performance. We prioritize correctness: a correct implementation (i.e., that passes all the test cases) will receive (at least) a score of 4-out-of-6. The rest 2-out-of-6 is given based on the perfomance of your implementation compared to the perfomance of the implemantions submitted by your colleagues. The fastest correct implementation will receive a perfect score (6). Incorrect implementations receive a score below 4, depending on the number of tests they fail to pass.
-
+## Execution
 We define several details for each algorithms below.
 
 ### Perfect Links application
   - The `CONFIG` command-line argument for this algorithm consists of a file that contains two integers `m i` in its first line. `m` defines how many messages each process should send. `i` is the index of the process that should receive the messages.
   Note that all processes, apart from `i`, send `m` messages each to process `i`.
   - Even though messages are not being broadcast, processes that send messages log them using the format `b`*`seq_nr`*.
-  - Similarly, process `i` (even though it simply receives the messages and does not deliver them) logs the messages using the format `d`*`sender`* *`seq_nr`*.
+  - Similarly, process `i` logs the messages using the format `d`*`sender`* *`seq_nr`*.
   - The following example builds and starts 3 processes (run from within the `template_cpp` or the `template_java` directory):
 ```sh
 # Build the application:
@@ -245,6 +230,32 @@ We say that a process `x` is affected by a process `z` if all the messages which
 # Type Ctrl-C in every terminal window to create the output files.
 ```
 
+## Limits
+The entire project implements abstractions that operate in the asynchronous model, i.e., there is no bound in processing and communication delays. However, during the evaluation of the projects we set a maximum execution time limit.
+In particular, for executions where:
+- the network is not delaying/dropping/reordering packets and
+- up to 9 processes broadcast 100 messages per each
+
+we set the execution limit at 25 minutes.
+
+Implementations that do not broadcast and do not deliver all messages within 25 minutes are considered incorrect.
+
+## Cooperation
+This project is meant to be completed individually. Copying from others is prohibited. You are free (and encouraged) to discuss the projects with others, but the submitted source code must be the exclusive work yours. Multiple copies of the same code will be disregarded without investigating which is the "original" and which is the "copy". Furthermore, please give appropriate credit to pieces of code you found online (e.g. in stackoverflow).
+
+*Note*: code similarity tools will be used to check copying.
+
+## Grading
+This project accounts for 30% of the final grade and comprises three submissions:
+  - A runnable application implementing perfect links (10%),
+  - A runnable application implementing FIFO Broadcast (40%), and
+  - A runnable application implementing Localized Causal Broadcast (50%).
+
+Note that these submissions are *incremental*. This means that your work towards the first will help you in your work towards the second.
+
+First, if your submission does not compile or invalid, e.g., produces empty output files, it will NOT be graded.
+If your submission passes the initial validation, we will evaluate it based on two criteria: correctness and performance. We prioritize correctness: a correct implementation (i.e., that passes all the test cases) will receive (at least) a score of 4-out-of-6. The rest 2-out-of-6 is given based on the perfomance of your implementation compared to the perfomance of the implemantions submitted by your colleagues. The fastest correct implementation will receive a perfect score (6). Incorrect implementations receive a score below 4, depending on the number of tests they fail to pass.
+
 # FAQ
 **1. Will I lose points if my code is not modular?**
 
@@ -270,10 +281,18 @@ You should aim for maximum performance. You can assume that the number of messag
 
 Yes. C/C++ and Java will be graded separately since the performance may be drastically different. It is up to you to choose the language you are the most comfortable with. We will calibrate the performance of both languages.
 
-**7. I cannot find the validation script of Local causal broadcast validation. Where is it?**
+**7. How can I introduce delay/loss/reordering in the network?**
 
-We do not provide a validation script for the last submission. You might need to implement it yourself. The validate.py script has a placeholder class in which you should place your code.
+For the purposes of this project all processes execute on the same machine and use the loopback interface.
+You can easily use [TC](https://man7.org/linux/man-pages/man8/tc.8.html) to change the characteristics of this interface and introduce the desired delay/loss/reordering.
+We provide the `tools/tc.py` script to simplify the process, however we urge you to consider changing the parameters inside this script to gain confidence in the correctness of your implementation.
+Run this script before starting the processes and keep it running for the duration of the execution.
 
-**8. Is ok that the hosts terminate before they are able to deliver all the messages?**
+**8. How can I validate my output?**
+
+It is your responsibility to ensure that your implementation is correct.
+However, we provide a sample validation script for the FIFO broacast (`tools/validate_fifo.py`). This script uses the output files generated by the processes after they terminate their execution.
+
+**9. Is ok that the hosts terminate before they are able to deliver all the messages?**
 
 Yes, as soon as you receive a SIGTERM signal, you need to terminate the process and start writing to the logs. You may not have delivered all the messages by that time which is ok. You should only deliver the message that you can deliver. i.e., that does not violate FIFO and URB. If instead you do, while you are not allowed to, you may be violating correctness.
