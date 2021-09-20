@@ -273,9 +273,9 @@ Yes. This is an implementation detail that is up to you.
 
 No. Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded. With an expected of 100+ submissions, it is almost impossible for us to look at each individual source code for grading.
 
-**5. Which performance I should aim for? How many messages per second?**
+**5. Which performance should I aim for? How many messages per second?**
 
-You should aim for maximum performance. You can assume that the number of messages will not be more than MAX_INT, i.e., each process will not broadcast more than 2147483647 messages. Also, you can assume that the broadcasting processes will be no more than 128. We know that there are always hardware limits so do not worry too much about this issue. Regarding correctness, we also expect that your code finishes in a reasonable amount of time, i.e., extremely slow submission can fail some correctness tests too.
+You should aim for maximum performance. You can assume that the number of messages will not be more than MAX_INT, i.e., each process will not broadcast more than 2147483647 messages. Also, you can assume that the broadcasting processes will be no more than 128. We know that there are always hardware limits so do not worry too much about this issue.
 
 **6. Will there be separate performance rankings for C/C++ and Java?**
 
