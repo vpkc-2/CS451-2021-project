@@ -232,6 +232,8 @@ We say that a process `x` is affected by a process `z` if all the messages which
 # Type Ctrl-C in every terminal window to create the output files.
 ```
 
+Note: Refer to the project slides on how to use the `stress.py` tool to easily run your project.
+
 ## Limits
 The entire project implements abstractions that operate in the asynchronous model, i.e., there is no bound in processing and communication delays. However, during the evaluation of the projects we set a maximum execution time limit.
 In particular, for executions where:
