@@ -8,8 +8,6 @@ public class Parser {
     private long pid;
     private IdParser idParser;
     private HostsParser hostsParser;
-    private BarrierParser barrierParser;
-    private SignalParser signalParser;
     private OutputParser outputParser;
     private ConfigParser configParser;
 
@@ -22,13 +20,11 @@ public class Parser {
 
         idParser = new IdParser();
         hostsParser = new HostsParser();
-        barrierParser = new BarrierParser();
-        signalParser = new SignalParser();
         outputParser = new OutputParser();
-        configParser = null;
+        configParser = new ConfigParser();
 
         int argsNum = args.length;
-        if (argsNum != Constants.ARG_LIMIT_NO_CONFIG && argsNum != Constants.ARG_LIMIT_CONFIG) {
+        if (argsNum != Constants.ARG_LIMIT_CONFIG) {
             help();
         }
 
@@ -44,27 +40,17 @@ public class Parser {
             help();
         }
 
-        if (!barrierParser.populate(args[Constants.BARRIER_KEY], args[Constants.BARRIER_VALUE])) {
-            help();
-        }
-
-        if (!signalParser.populate(args[Constants.SIGNAL_KEY], args[Constants.SIGNAL_VALUE])) {
-            help();
-        }
-
         if (!outputParser.populate(args[Constants.OUTPUT_KEY], args[Constants.OUTPUT_VALUE])) {
             help();
         }
 
-        if (argsNum == Constants.ARG_LIMIT_CONFIG) {
-            configParser = new ConfigParser();
-            if (!configParser.populate(args[Constants.CONFIG_VALUE])) {
-            }
+        if (!configParser.populate(args[Constants.CONFIG_VALUE])) {
+            help();
         }
     }
 
     private void help() {
-        System.err.println("Usage: ./run.sh --id ID --hosts HOSTS --barrier NAME:PORT --signal NAME:PORT --output OUTPUT [config]");
+        System.err.println("Usage: ./run.sh --id ID --hosts HOSTS --output OUTPUT CONFIG");
         System.exit(1);
     }
 
@@ -76,28 +62,8 @@ public class Parser {
         return hostsParser.getHosts();
     }
 
-    public String barrierIp() {
-        return barrierParser.getIp();
-    }
-
-    public int barrierPort() {
-        return barrierParser.getPort();
-    }
-
-    public String signalIp() {
-        return signalParser.getIp();
-    }
-
-    public int signalPort() {
-        return signalParser.getPort();
-    }
-
     public String output() {
         return outputParser.getPath();
-    }
-
-    public boolean hasConfig() {
-        return configParser != null;
     }
 
     public String config() {

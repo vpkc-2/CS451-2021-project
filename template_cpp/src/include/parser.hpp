@@ -92,7 +92,7 @@ public:
   };
 
 public:
-  Parser(const int argc, char const *const *argv, bool withConfig)
+  Parser(const int argc, char const *const *argv, bool withConfig = true)
       : argc{argc}, argv{argv}, withConfig{withConfig}, parsed{false} {}
 
   void parse() {
@@ -111,16 +111,6 @@ public:
   const char *hostsPath() const {
     checkParsed();
     return hostsPath_.c_str();
-  }
-
-  Host barrier() const {
-    checkParsed();
-    return barrier_;
-  }
-
-  Host signal() const {
-    checkParsed();
-    return signal_;
   }
 
   const char *outputPath() const {
@@ -205,14 +195,6 @@ private:
       return false;
     }
 
-    if (!parseBarrier()) {
-      return false;
-    }
-
-    if (!parseSignal()) {
-      return false;
-    }
-
     if (!parseOutputPath()) {
       return false;
     }
@@ -227,7 +209,7 @@ private:
   void help(const int, char const *const *argv) {
     auto configStr = "CONFIG";
     std::cerr << "Usage: " << argv[0]
-              << " --id ID --hosts HOSTS --barrier NAME:PORT --signal NAME:PORT --output OUTPUT";
+              << " --id ID --hosts HOSTS --output OUTPUT";
 
     if (!withConfig) {
       std::cerr << "\n";
@@ -273,59 +255,13 @@ private:
     return false;
   }
 
-  bool parseBarrier() {
+  bool parseOutputPath() {
     if (argc < 7) {
       return false;
     }
 
-    if (std::strcmp(argv[5], "--barrier") == 0) {
-      std::string barrier_addr = argv[6];
-      std::replace(barrier_addr.begin(), barrier_addr.end(), ':', ' ');
-      std::stringstream ss(barrier_addr);
-
-      std::string barrier_name;
-      unsigned short barrier_port;
-
-      ss >> barrier_name;
-      ss >> barrier_port;
-
-      barrier_ = Host(0, barrier_name, barrier_port);
-      return true;
-    }
-
-    return false;
-  }
-
-  bool parseSignal() {
-    if (argc < 9) {
-      return false;
-    }
-
-    if (std::strcmp(argv[7], "--signal") == 0) {
-      std::string signal_addr = argv[8];
-      std::replace(signal_addr.begin(), signal_addr.end(), ':', ' ');
-      std::stringstream ss(signal_addr);
-
-      std::string signal_name;
-      unsigned short signal_port;
-
-      ss >> signal_name;
-      ss >> signal_port;
-
-      signal_ = Host(0, signal_name, signal_port);
-      return true;
-    }
-
-    return false;
-  }
-
-  bool parseOutputPath() {
-    if (argc < 11) {
-      return false;
-    }
-
-    if (std::strcmp(argv[9], "--output") == 0) {
-      outputPath_ = std::string(argv[10]);
+    if (std::strcmp(argv[5], "--output") == 0) {
+      outputPath_ = std::string(argv[6]);
       return true;
     }
 
@@ -337,11 +273,11 @@ private:
       return true;
     }
 
-    if (argc < 12) {
+    if (argc < 8) {
       return false;
     }
 
-    configPath_ = std::string(argv[11]);
+    configPath_ = std::string(argv[7]);
     return true;
   }
 
@@ -383,8 +319,6 @@ private:
 
   unsigned long id_;
   std::string hostsPath_;
-  Host barrier_;
-  Host signal_;
   std::string outputPath_;
   std::string configPath_;
 };
