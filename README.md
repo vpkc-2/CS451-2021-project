@@ -93,7 +93,7 @@ The templates provided come with a command line interface (CLI) that you should 
 
 The supported arguments are:
 ```sh
-./run.sh --id ID --hosts HOSTS --barrier NAME:PORT --signal NAME:PORT --output OUTPUT [config]
+./run.sh --id ID --hosts HOSTS --output OUTPUT CONFIG
 ```
 
 Where:
@@ -106,18 +106,8 @@ Where:
 1 192.168.0.1 11001
 4 my.domain.com 11002
   ```
-  **Note**: The processes should listen for incoming messages in the port range `11000` to `11999` inclusive.
+  **Note**: The processes should listen for incoming messages in the port range `11000` to `11999` inclusive. Each process should use only 1 port.
 
-  - `NAME:PORT` for `--barrier` specifies the IP/Name and port of the barrier, which ensures that all processes have been intialized before the broacasting starts. The barrier is implemented using TCP and it is one of the two places (the other is for the `--signal` argument) in the source code where TCP is allowed. You can run the barrier as:
-```sh
-./barrier.py [-h] [--host HOST] [--port PORT] --processes PROCESSES
-```
-E.g. to wait for 3 processes, run `./barrier.py --processes 3`. When 3 connections are established to the barrier, the barrier closes all the connections, signaling the processes to start. The barrier cannot be used twice, meaning that you need to restart it every time you want to run you application. Also, it must be started before any other process.
- - `NAME:PORT` for `--signal` specifies the IP/Name and port of the service (notification handler) that handles the notifications sent by processes when they finish broadcasting. This notification is used to measure the time processes spend broadcasting messages: it is the time period between the release of the barrier up until this notification is sent.  The notification mechanism is implemented using TCP and it is one of the two places (the other is for the `--barrier` argument) in the source code where TCP is allowed. You can run the notification handler as:
-```sh
-./finishedSignal.py [-h] [--host HOST] [--port PORT] --processes PROCESSES
-```
-Note: Start both `finishedSignal.py` and `barrier.py` before you start any other process and provide the same number of `--processes` for both.
   - `OUTPUT` specifies the path to a text file where a process stores its output. The text file contains a log of events.  Each event is represented by one line of the output file, terminated by a Unix-style line break `\n`. There are two types of events to be logged:
     -  broadcast of application message, using the format `b`*`seq_nr`*,
   where `seq_nr` is the sequence number of the message.
@@ -136,10 +126,10 @@ A process that receives a `SIGTERM` or `SIGINT` signal must immediately stop its
 
 **Note:** The most straight-forward way of logging the output is to append a line to the output file on every broadcast or delivery event. However, this may harm the performance of the implementation. You might consider more sophisticated logging approaches, such as storing all logs in memory and write them to a file only when the `SIGINT` or `SIGTERM` signal is received. Also note that even a crashed process needs to output the sequence of events that occurred before the crash. You can assume that a process crash will be simulated only by the `SIGINT` or `SIGTERM` signals. Remember that writing to files is the only action we allow a process to do after receiving a `SIGINT` or `SIGTERM` signal.
 
-  - `config`  specifies the path to a file that contains specific information required from the deliverable (e.g. processes that broadcast).
+  - `CONFIG`  specifies the path to a file that contains specific information required from the deliverable (e.g. processes that broadcast).
 
 ## Compilation
-All submitted implementations will be tested using Ubuntu 18.04 running on a 64-bit architecture. 
+All submitted implementations will be tested using Ubuntu 18.04 running on a 64-bit architecture.
 These are the specific versions of toolchains where you project will be tested upon:
   - gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
   - g++ (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
@@ -172,19 +162,56 @@ If your submission passes the initial validation, we will evaluate it based on t
 We define several details for each algorithms below.
 
 ### Perfect Links application
-  - The `config` command-line argument for this algorithm consists of a file that contains two integers `m i` in its first line. `m` defines how many messages each process should send. `i` is the index of the process that should receive the message.
+  - The `CONFIG` command-line argument for this algorithm consists of a file that contains two integers `m i` in its first line. `m` defines how many messages each process should send. `i` is the index of the process that should receive the messages.
+  Note that all processes, apart from `i`, send `m` messages each to process `i`.
+  - Even though messages are not being broadcast, processes that send messages log them using the format `b`*`seq_nr`*.
+  - Similarly, process `i` (even though it simply receives the messages and does not deliver them) logs the messages using the format `d`*`sender`* *`seq_nr`*.
+  - The following example builds and starts 3 processes (run from within the `template_cpp` or the `template_java` directory):
+```sh
+# Build the application:
+./build.sh
+
+# In first terminal window:
+./run.sh --id 1 --hosts ../example/hosts --output ../example/output/1.output ../example/configs/perfect-links.config
+
+# In second terminal window:
+./run.sh --id 2 --hosts ../example/hosts --output ../example/output/2.output ../example/configs/perfect-links.config
+
+# In third terminal window:
+./run.sh --id 3 --hosts ../example/hosts --output ../example/output/3.output ../example/configs/perfect-links.config
+
+# Wait enough time for all processes to finish processing messages.
+# Type Ctrl-C in every terminal window to create the output files.
+```
 
 ### FIFO Broadcast application
   - You must implement this on top of uniform reliable broadcast (URB).
-  - The `config` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
+  - The `CONFIG` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
+  - The following example builds and starts 3 processes (run from within the `template_cpp` or the `template_java` directory):
+```sh
+# Build the application:
+./build.sh
+
+# In first terminal window:
+./run.sh --id 1 --hosts ../example/hosts --output ../example/output/1.output ../example/configs/fifo-broadcast.config
+
+# In second terminal window:
+./run.sh --id 2 --hosts ../example/hosts --output ../example/output/2.output ../example/configs/fifo-broadcast.config
+
+# In third terminal window:
+./run.sh --id 3 --hosts ../example/hosts --output ../example/output/3.output ../example/configs/fifo-broadcast.config
+
+# Wait enough time for all processes to finish processing messages.
+# Type Ctrl-C in every terminal window to create the output files.
+```
 
 ### Localized Causal Broadcast
   - You must implement this on top of uniform reliable broadcast (URB).
-  - The `config` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
-  - For a system of `n` processes, there are `n` more lines in the `config` file. Each line `i` corresponds to process `i`, and such a line indicates the identities of other processes which can affect process `i`. See the example below.
+  - The `CONFIG` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
+  - For a system of `n` processes, there are `n` more lines in the `CONFIG` file. Each line `i` corresponds to process `i`, and such a line indicates the identities of other processes which can affect process `i`. See the example below.
   - The FIFO property still needs to be maintained by localized causal broadcast. That is, messages broadcast by the same process must not be delivered in a different order then they were broadcast.
   - The output format for localized causal broadcast remains the same as before, i.e., adhering to the description in Section.
-  Example of `config` file for a system of `5` processes, where each one broadcasts `m` messages:
+  Example of `CONFIG` file for a system of `5` processes, where each one broadcasts `m` messages:
 ```
 m
 1 4 5
@@ -200,11 +227,28 @@ In this example we specify that process `1` is affected by messages broadcast by
 We say that a process `x` is affected by a process `z` if all the messages which process `z` broadcasts and which process `x` delivers become dependencies for all future messages broadcast by process `x`. We call these dependencies *localized*. If a process is not affected by any other process, messages it broadcasts only depend on its previously broadcast messages (due to the FIFO property).
 
 *Note*:  In the default causal broadcast (this algorithm will be discussed in one of the lectures) each process affects `all` processes. In this algorithm we can selectively define which process affects some other process.
+  - The following example builds and starts 3 processes (run from within the `template_cpp` or the `template_java` directory):
+```sh
+# Build the application:
+./build.sh
+
+# In first terminal window:
+./run.sh --id 1 --hosts ../example/hosts --output ../example/output/1.output ../example/configs/lcausal-broadcast.config
+
+# In second terminal window:
+./run.sh --id 2 --hosts ../example/hosts --output ../example/output/2.output ../example/configs/lcausal-broadcast.config
+
+# In third terminal window:
+./run.sh --id 3 --hosts ../example/hosts --output ../example/output/3.output ../example/configs/lcausal-broadcast.config
+
+# Wait enough time for all processes to finish processing messages.
+# Type Ctrl-C in every terminal window to create the output files.
+```
 
 # FAQ
 **1. Will I lose points if my code is not modular?**
 
-Yes. We require modular code. 
+Yes. We require modular code.
 
 **2. Can I put multiple messages in the same packet?**
 
@@ -216,7 +260,7 @@ Yes. This is an implementation detail that is up to you.
 
 **4. I implemented the whole project but it does not work correctly (or does not compile). Will I get some points for the implementation?**
 
-No. Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded. With an expected of 100+ submissions, it is almost impossible for us to look at each individual source code for grading. 
+No. Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded. With an expected of 100+ submissions, it is almost impossible for us to look at each individual source code for grading.
 
 **5. Which performance I should aim for? How many messages per second?**
 
