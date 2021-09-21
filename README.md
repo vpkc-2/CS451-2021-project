@@ -29,7 +29,7 @@ In order to have a fair comparison among implementations, as well as provide sup
 
 Note that we provide you a template for both C/C++ and Java. It is mandatory to use the template in your project. You are **NOT** allowed to change any of the file names or the function signatures in this template.
 
-Allowed 3rd party libraries: **None**. You are not allowed to use any third party libraries in your project. C++17 and Java 11 come with an extensive standard library that can easily satisfy all your needs. In other words, any library that is reachable using the VM (provided in the repo) without additional configuration is allowed. Please double-check your code is able to be compiled in the VM as the submission will not be accepted.
+Allowed 3rd party libraries: **None**. You are not allowed to use any third party libraries in your project. C++17 and Java 11 come with an extensive standard library that can easily satisfy all your needs. In other words, any library that is reachable using the [VM](https://github.com/LPD-EPFL/CS451-2021-project/blob/master/VM.txt) (provided in the repo) without additional configuration is allowed. Please double-check your code is able to be compiled in the VM as the submission will not be accepted.
 
 ## Messages
 Inter-process point-to-point messages (at the low level) must be carried exclusively by UDP packets in their most basic form, not utilizing any additional features (e.g., any form of feedback about packet delivery) provided by the network stack, the operating system or external libraries. Everything must be implemented on top of these low-level point to point messages.
@@ -126,8 +126,6 @@ A process that receives a `SIGTERM` or `SIGINT` signal must immediately stop its
 
 **Note:** The most straight-forward way of logging the output is to append a line to the output file on every broadcast or delivery event. However, this may harm the performance of the implementation. You might consider more sophisticated logging approaches, such as storing all logs in memory and write them to a file only when the `SIGINT` or `SIGTERM` signal is received. Also note that even a crashed process needs to output the sequence of events that occurred before the crash. You can assume that a process crash will be simulated only by the `SIGINT` or `SIGTERM` signals. Remember that writing to files is the only action we allow a process to do after receiving a `SIGINT` or `SIGTERM` signal.
 
-  - `CONFIG`  specifies the path to a file that contains specific information required from the deliverable (e.g. processes that broadcast).
-
 ## Compilation
 All submitted implementations will be tested using Ubuntu 18.04 running on a 64-bit architecture.
 These are the specific versions of toolchains where you project will be tested upon:
@@ -139,7 +137,7 @@ These are the specific versions of toolchains where you project will be tested u
 
 All submitted files are to be placed in one zip file, in the same structure as the provided templates. Make sure that the top-level of the zip file is not a directory that contains the template (along with your source code inside `src`), but the template itself.
 
-You are **strongly encouraged** to test the compilation of your code in the virtualbox VM provided to you. **Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded.**
+You are **strongly encouraged** to test the compilation of your code in the virtualbox [VM](https://github.com/LPD-EPFL/CS451-2021-project/blob/master/VM.txt) provided to you. **Submissions that fail to compile will NOT be considered for grading. Similarly, submissions that fail to produce any output files or produce faulty output files (e.g., empty files) will NOT be graded.**
 
 **Detailed instructions for submitting your project will be released soon.**
 
