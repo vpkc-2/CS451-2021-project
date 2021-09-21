@@ -197,7 +197,7 @@ We define several details for each algorithms below.
   - The `CONFIG` command-line argument for this algorithm consists of a file that contains an integer `m` in its first line. `m` defines how many messages each process should broadcast.
   - For a system of `n` processes, there are `n` more lines in the `CONFIG` file. Each line `i` corresponds to process `i`, and such a line indicates the identities of other processes which can affect process `i`. See the example below.
   - The FIFO property still needs to be maintained by localized causal broadcast. That is, messages broadcast by the same process must not be delivered in a different order then they were broadcast.
-  - The output format for localized causal broadcast remains the same as before, i.e., adhering to the description in Section.
+  - The output format for localized causal broadcast remains the same as before.
   Example of `CONFIG` file for a system of `5` processes, where each one broadcasts `m` messages:
 ```
 m
