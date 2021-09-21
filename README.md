@@ -168,6 +168,7 @@ We define several details for each algorithms below.
 
 # Wait enough time for all processes to finish processing messages.
 # Type Ctrl-C in every terminal window to create the output files.
+# Of course, you will NOT find any output files after running this because there is nothing implemented now!
 ```
 
 ### FIFO Broadcast application
