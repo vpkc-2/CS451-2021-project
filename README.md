@@ -122,6 +122,9 @@ d 2 1
 d 4 2
 b 4
 ```
+
+- `CONFIG` specifies the path to a file that contains additional information for the experimented abstraction (e.g. how many message to broadcast).
+
 A process that receives a `SIGTERM` or `SIGINT` signal must immediately stop its execution with the exception of writing to an output log file (see below). In particular, it must not send or handle any received network packets. This is used to simulate process crashes. You can assume that at most a minority (e.g., 1 out of 3; 2 out of 5; 4 out of 10, ...) processes may crash in one execution.
 
 **Note:** The most straight-forward way of logging the output is to append a line to the output file on every broadcast or delivery event. However, this may harm the performance of the implementation. You might consider more sophisticated logging approaches, such as storing all logs in memory and write them to a file only when the `SIGINT` or `SIGTERM` signal is received. Also note that even a crashed process needs to output the sequence of events that occurred before the crash. You can assume that a process crash will be simulated only by the `SIGINT` or `SIGTERM` signals. Remember that writing to files is the only action we allow a process to do after receiving a `SIGINT` or `SIGTERM` signal.
